@@ -68,20 +68,28 @@ function getTouchPos(e) {
   };
 }
 
-function drawLine(from, to, emit) {
+var color = '#222';
+var colorPicker = document.getElementById('colorPicker');
+if (colorPicker) {
+  colorPicker.addEventListener('input', function (e) {
+    color = e.target.value;
+  });
+}
+
+function drawLine(from, to, emit, remoteColor) {
   ctx.beginPath();
   ctx.moveTo(from.x, from.y);
   ctx.lineTo(to.x, to.y);
-  ctx.strokeStyle = '#222';
+  ctx.strokeStyle = remoteColor || color;
   ctx.lineWidth = 2;
   ctx.stroke();
   ctx.closePath();
   if (emit) {
-    socket.emit('draw', { from: from, to: to });
+    socket.emit('draw', { from: from, to: to, color: color });
   }
 }
 
 // Listen for drawing events from others
 socket.on('draw', function (data) {
-  drawLine(data.from, data.to, false);
+  drawLine(data.from, data.to, false, data.color);
 });
