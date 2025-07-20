@@ -96,7 +96,6 @@ if (colorPicker) {
     color = e.target.value;
   });
 }
-
 var clearBtn = document.getElementById('clearBtn');
 if (clearBtn) {
   clearBtn.addEventListener('click', function () {
@@ -109,7 +108,6 @@ if (clearBtn) {
 function clearBoard() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
-
 function drawLine(from, to, emit, remoteColor) {
   ctx.beginPath();
   ctx.moveTo(from.x, from.y);
@@ -131,7 +129,6 @@ function getPos(e) {
     y: (e.clientY - rect.top) * (canvas.height / rect.height)
   };
 }
-
 function getTouchPos(e) {
   var rect = canvas.getBoundingClientRect();
   var touch = e.touches[0] || e.changedTouches[0];
@@ -186,14 +183,20 @@ canvas.addEventListener('touchmove', function (e) {
 });
 
 // ==== Socket Events ==== //
+// Receive and replay board state on connect
+socket.on('board-state', function (actions) {
+  actions.forEach(function (data) {
+    drawLine(data.from, data.to, false, data.color);
+  });
+});
+// Draw lines received from other users
 socket.on('draw', function (data) {
   drawLine(data.from, data.to, false, data.color);
 });
-
+// Clear board when clear event is received
 socket.on('clear', function () {
   clearBoard();
 });
-
 // Update user list when received from server
 socket.on('user-list', function (users) {
   var ul = document.getElementById('userListItems');

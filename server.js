@@ -12,19 +12,24 @@ const io = new Server(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==== Usernames State ==== //
+const boardState = [];
 const usernames = {};
 
 // ==== Events handling ==== //
 io.on('connection', (socket) => {
+  // Send current board state to new user
+  socket.emit('board-state', boardState);
   console.log('A user connected:', socket.id);
 
   // Relay drawing data to all other clients
   socket.on('draw', (data) => {
+    boardState.push(data);
     socket.broadcast.emit('draw', data);
   });
 
   // Relay clear board event to all other clients
   socket.on('clear', () => {
+    boardState.length = 0;
     socket.broadcast.emit('clear');
   });
 
