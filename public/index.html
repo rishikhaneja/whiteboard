@@ -10,6 +10,17 @@
   </style>
 </head>
 <body>
+  <div id="usernameModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:9999;">
+    <div style="background:#fff; padding:32px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2); text-align:center;">
+      <label for="usernameInput" style="display:block; margin-bottom:12px;">Enter your name:</label>
+      <input id="usernameInput" type="text" maxlength="20" style="padding:8px; width:200px; margin-bottom:16px;">
+      <button id="usernameBtn" style="padding:8px 24px; background:#222; color:#fff; border:none; border-radius:4px; cursor:pointer;">Join</button>
+    </div>
+  </div>
+  <div id="userList" style="position:fixed; top:0; right:0; background:rgba(255,255,255,0.95); padding:12px 24px; border-bottom-left-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); font-family:sans-serif; font-size:16px; z-index:1000;">
+    <b>Connected Users:</b>
+    <ul id="userListItems" style="list-style:none; padding-left:0; margin:8px 0 0 0;"></ul>
+  </div>
   <div style="text-align:center; margin-top:20px;">
     <label for="colorPicker">Color: </label>
     <input type="color" id="colorPicker" value="#222222">

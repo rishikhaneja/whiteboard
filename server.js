@@ -11,11 +11,11 @@ const io = new Server(server);
 // ==== Static File Serving ==== //
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ==== Usernames State ==== //
+// ==== State ==== //
 const boardState = [];
 const usernames = {};
 
-// ==== Events handling ==== //
+// ==== Events ==== //
 io.on('connection', (socket) => {
   // Send current board state to new user
   socket.emit('board-state', boardState);
