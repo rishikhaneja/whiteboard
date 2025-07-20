@@ -11,7 +11,10 @@ const io = new Server(server);
 // ==== Static File Serving ==== //
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ==== Socket.IO Events ==== //
+// ==== Usernames State ==== //
+const usernames = {};
+
+// ==== Events handling ==== //
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
@@ -25,7 +28,17 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('clear');
   });
 
+  // Handle username setting
+  socket.on('set-username', (username) => {
+    usernames[socket.id] = username;
+    io.emit('user-list', Object.values(usernames));
+    console.log(`User ${socket.id} set username: ${username}`);
+  });
+
+  // Handle user disconnection
   socket.on('disconnect', () => {
+    delete usernames[socket.id];
+    io.emit('user-list', Object.values(usernames));
     console.log('User disconnected:', socket.id);
   });
 });

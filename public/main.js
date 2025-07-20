@@ -6,6 +6,88 @@ var ctx = canvas.getContext('2d');
 var drawing = false;
 var last = null;
 var color = '#222';
+var username = null;
+
+// ==== Username Modal ==== //
+function showUsernameModal() {
+  var modal = document.createElement('div');
+  modal.style.position = 'fixed';
+  modal.style.top = '0';
+  modal.style.left = '0';
+  modal.style.width = '100vw';
+  modal.style.height = '100vh';
+  modal.style.background = 'rgba(0,0,0,0.4)';
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  modal.style.zIndex = '9999';
+
+  var box = document.createElement('div');
+  box.style.background = '#fff';
+  box.style.padding = '32px';
+  box.style.borderRadius = '8px';
+  box.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+  box.style.textAlign = 'center';
+
+  var label = document.createElement('label');
+  label.textContent = 'Enter your name:';
+  label.style.display = 'block';
+  label.style.marginBottom = '12px';
+
+  var input = document.createElement('input');
+  input.type = 'text';
+  input.style.padding = '8px';
+  input.style.width = '200px';
+  input.style.marginBottom = '16px';
+  input.maxLength = 20;
+
+  var btn = document.createElement('button');
+  btn.textContent = 'Join';
+  btn.style.padding = '8px 24px';
+  btn.style.background = '#222';
+  btn.style.color = '#fff';
+  btn.style.border = 'none';
+  btn.style.borderRadius = '4px';
+  btn.style.cursor = 'pointer';
+
+  btn.onclick = function () {
+    var val = input.value.trim();
+    if (!val) {
+      input.style.border = '2px solid red';
+      return;
+    }
+    username = val;
+    socket.emit('set-username', username);
+    document.body.removeChild(modal);
+  };
+
+  box.appendChild(label);
+  box.appendChild(input);
+  box.appendChild(btn);
+  modal.appendChild(box);
+  document.body.appendChild(modal);
+  input.focus();
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  showUsernameModal();
+
+  // Add user list UI
+  var userListDiv = document.createElement('div');
+  userListDiv.id = 'userList';
+  userListDiv.style.position = 'fixed';
+  userListDiv.style.top = '0';
+  userListDiv.style.right = '0';
+  userListDiv.style.background = 'rgba(255,255,255,0.95)';
+  userListDiv.style.padding = '12px 24px';
+  userListDiv.style.borderBottomLeftRadius = '12px';
+  userListDiv.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+  userListDiv.style.fontFamily = 'sans-serif';
+  userListDiv.style.fontSize = '16px';
+  userListDiv.style.zIndex = '1000';
+  userListDiv.innerHTML = '<b>Connected Users:</b><ul id="userListItems" style="list-style:none;padding-left:0;margin:8px 0 0 0;"></ul>';
+  document.body.appendChild(userListDiv);
+});
 
 // ==== UI Handlers ==== //
 var colorPicker = document.getElementById('colorPicker');
@@ -110,4 +192,22 @@ socket.on('draw', function (data) {
 
 socket.on('clear', function () {
   clearBoard();
+});
+
+// Update user list when received from server
+socket.on('user-list', function (users) {
+  var ul = document.getElementById('userListItems');
+  if (!ul) return;
+  ul.innerHTML = '';
+  users.forEach(function (u) {
+    var li = document.createElement('li');
+    if (u === username) {
+      li.textContent = u + ' (You)';
+      li.style.fontWeight = 'bold';
+      li.style.color = '#1976d2';
+    } else {
+      li.textContent = u;
+    }
+    ul.appendChild(li);
+  });
 });
